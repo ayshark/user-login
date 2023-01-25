@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -7,10 +8,12 @@ from rest_framework.response import Response
 from .models import User
 from .serializer import UserSerializer
 
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
+
 
 class UserLogIn(ObtainAuthToken):
     def post(self, request, *args, **kwargs):

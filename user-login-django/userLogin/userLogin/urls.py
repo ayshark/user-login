@@ -20,10 +20,10 @@ from django.conf.urls.static import static
 from django.views.generic.base import RedirectView
 from rest_framework.routers import DefaultRouter
 from users.views import UserViewSet, UserLogIn
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+# from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 router = DefaultRouter()
-router.register(r'users', UserViewSet)
+router.register(r'users', UserViewSet, basename='User')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -31,4 +31,4 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('api-user-login/', UserLogIn.as_view()),
     re_path(r'^$', RedirectView.as_view(url=reverse_lazy('api-root'), permanent=False)),
-]
+] 
