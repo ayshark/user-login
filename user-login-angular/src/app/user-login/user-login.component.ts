@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, Validators, FormControl, FormGroup } from '@angular/forms';
+import { Validators, FormControl, FormGroup } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 // import { ReactiveFormsModule } from '@angular/forms';
+import { map } from 'rxjs';
 import { AuthService } from '../auth.service';
 import { UserCredentials } from '../auth';
-import { JsonPipe } from '@angular/common';
+import { SignInService } from '../Services/signin.services';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user-login',
@@ -13,39 +16,41 @@ import { JsonPipe } from '@angular/common';
 export class UserLoginComponent implements OnInit{
   ngOnInit(): void { }
 
-  constructor(private formBuilder: FormBuilder, private authService: AuthService) {
-    // this.logInForm = this.formBuilder.group({
-    //   username: ['', Validators.required],
-    //   password: ['', Validators.required],
-    // })
-    this.formvalue = {'username': '', 'password': ''};
-  }
+  constructor(private httpClient: HttpClient, private authService: AuthService, private router: Router, private signin: SignInService) { }
+
+  preview: string = '';
+  username: any = '';
+  password: any = '';
+  log_id: number = this.signin.log_id;
 
   logInForm = new FormGroup({
     username: new FormControl('', [Validators.required]),
     password: new FormControl('', [Validators.required]),
   });
 
-  preview: string = '';
-  formvalue: {username: string, password: string};
-
-  logInUser(user: UserCredentials): void {
-    this.authService.logIn(user.username, user.password).subscribe({
-      next: (data) => console.log(data),
-      error: (error) => console.log(error)
+  onSubmit() {
+    this.username = this.logInForm.value.username;
+    this.password = this.logInForm.value.password;
+    this.httpClient.post('http://127.0.0.1:8000/api/login/', {username: this.username, password: this.password})
+    .pipe(map((res: {[key: string]: any}) => {
+      for (const key in res) {
+        if (key == 'id') {
+          this.log_id = res[key];
+          this.signin.updateLogId(this.log_id);
+          localStorage.setItem('token', this.log_id.toString());
+        }
+      }
+    }))
+    .subscribe((data) => {
+      console.log(data); 
+      // localStorage.setItem('token', JSON.stringify(res.valueOf(token)));
+      this.router.navigate(['/home']);
+      // if (data == 'already logged in') {
+      //   this.router.navigate(['/signup']);
+      // }
+      // else {
+      //   this.router.navigate(['/home']);
+      // }
     });
   }
-
-  onSubmit() {
-    console.log(JSON.stringify(this.logInForm.value))
-    if (this.logInForm.invalid) {
-      console.log("fill the details");
-    } else {
-      console.log('no error')};
-      this.formvalue = {username: JSON.stringify(this.logInForm.value.username), password: JSON.stringify(this.logInForm.value.password)};
-      this.logInUser(this.formvalue);
-
-    // console.log(JSON.stringify(this.logInForm.value))
-  }
-
 }

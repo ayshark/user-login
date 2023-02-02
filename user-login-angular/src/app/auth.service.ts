@@ -10,7 +10,11 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
-  logIn(username: string, password: string): Observable<any> {
-    return this.http.post('http://127.0.0.1:8000/api-user-login/', {username, password} as unknown as Observable<any>)
+  logIn(username: string, password: string) {
+    return this.http.post('http://127.0.0.1:8000/api/login/', {username: username, password: password})
+  }
+
+  logOut(username: string) {
+    return this.http.patch('http://127.0.0.1:8000/api/login/', {username: username, has_logged_out: true})
   }
 }

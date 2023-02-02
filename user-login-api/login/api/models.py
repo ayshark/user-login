@@ -17,7 +17,8 @@ class Users(models.Model):
 class Logs(models.Model):
     user = models.ForeignKey(Users, on_delete=models.CASCADE)
     time = models.DateTimeField(auto_now_add=True)
-    # token = models.PositiveIntegerField(auto_created=True)
+    token = models.PositiveIntegerField(auto_created=True, unique=True)
+    has_logged_out = models.BooleanField(default=False)
     # token = models.???
 
     def __str__(self):

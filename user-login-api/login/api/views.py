@@ -6,6 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.hashers import check_password
 
 import datetime
+import random
 import sys
 
 from .models import Users, Logs
@@ -102,20 +103,6 @@ class UserDetailAPI(APIView):
 
 class LogInAPI(APIView):
     # permission_classes = [permissions.IsAuthenticated]
-
-    # def get_user(self, username, password, request):
-    #     try: 
-    #         user = Users.objects.filter(username = username)[0]
-    #         if not user:
-    #             # return user
-    #             return "user not found"
-    #         if user.password != password:
-    #             return "password incorrect"
-    #         if user.password == request.data.get('password'):
-    #             return user
-    #     except: 
-    #         return None
-        # else:
             
 # {
 # "username": "ef",
@@ -133,7 +120,20 @@ class LogInAPI(APIView):
         except:
             return None
 
-    
+    def user_not_logged(self, user_id):
+        try:
+            return Logs.objects.filter(user = user_id).order_by('-time')[0].has_logged_out
+        except:
+            return True
+
+    def get(self, request):
+        logs = Logs.objects.all()
+        serializer = LogsSerializer(logs, many = True)
+        return Response(
+            serializer.data,
+            status = status.HTTP_200_OK
+        )
+
     def post(self, request):
         user = self.get_user(request.data.get('username'), request.data.get('password'))
         if user == "password incorrect":
@@ -146,11 +146,52 @@ class LogInAPI(APIView):
                 {'res': 'account with username {} does not exist'.format(request.data.get('username'))},
                 status = status.HTTP_400_BAD_REQUEST
             )
-        user_id = Users.objects.get(username = request.data.get('username')).id
-        data = {
+        user_id = user.id
+        if self.user_not_logged(user_id):
+            data = {
             'user': user_id,
+            'token': random.randint(100, 1000)
+            }
+            serializer = LogsSerializer(data = data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(
+                    serializer.data,
+                    status = status.HTTP_200_OK
+                )
+        else:
+            print('the user is already logged in dude', file=sys.stdout)
+            return Response(
+                {'res': 'already logged in'},
+                status = status.HTTP_200_OK
+            )
+
+        return Response(
+            serializer.errors,
+            status = status.HTTP_400_BAD_REQUEST
+        )        
+
+class LogOutAPI(APIView):
+
+    def get_log(self, id):
+        try:
+            return Logs.objects.get(id = id)
+        except:
+            return None
+
+    def patch(self, request):  
+        log = self.get_log(request.data.get('id')) 
+        if not log:
+            return Response(
+                {'res': 'user has not logged in'},
+                status = status.HTTP_200_OK
+            )     
+        data = {
+            'user': log.user.id,
+            'token': log.token,
+            'has_logged_out': True
         }
-        serializer = LogsSerializer(data = data)
+        serializer = LogsSerializer(instance = log, data = data)
         if serializer.is_valid():
             serializer.save()
             return Response(
@@ -158,8 +199,7 @@ class LogInAPI(APIView):
                 status = status.HTTP_200_OK
             )
         return Response(
-            serializer.errors,
-            status = status.HTTP_400_BAD_REQUEST
-        )
+                serializer.errors,
+                status = status.HTTP_400_BAD_REQUEST
+            )
         
-

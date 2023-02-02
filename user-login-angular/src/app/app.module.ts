@@ -14,12 +14,14 @@ import { RouterModule } from "@angular/router"
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UserSignupComponent } from './user-signup/user-signup.component';
+import { HomePageComponent } from './home-page/home-page.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     UserLoginComponent,
     UserSignupComponent,
+    HomePageComponent,
   ],
   imports: [
     BrowserModule,
