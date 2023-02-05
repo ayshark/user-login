@@ -203,4 +203,22 @@ class LogOutAPI(APIView):
                 serializer.errors,
                 status = status.HTTP_400_BAD_REQUEST
             )
-        
+
+class ViewUserLogsAPI(APIView):
+
+    def get_logs(self, user):
+        try:
+            return Logs.objects.filter(user = user)
+        except:
+            return None
+
+    def get(self, request, id):
+        # id = request.data.get('user')
+        logs = self.get_logs(id)
+        serializer = LogsSerializer(logs, many=True)
+        return Response(
+            serializer.data,
+            status = status.HTTP_200_OK
+        )
+
+    
