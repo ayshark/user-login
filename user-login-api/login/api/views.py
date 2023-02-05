@@ -188,6 +188,7 @@ class LogOutAPI(APIView):
             )     
         data = {
             'user': log.user.id,
+            'logout_time': datetime.datetime.now(),
             'token': log.token,
             'has_logged_out': True
         }
