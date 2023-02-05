@@ -1,7 +1,11 @@
-<mat-toolbar>angular auth</mat-toolbar>
+<mat-toolbar>
+    <span>Angular Project</span>
+    <span class="example-spacer"></span>
+    <span class="block"><a routerLink="/login" routerLinkActive="active" >Log in</a></span>
+    <span class="block"><a routerLink="/signup" routerLinkActive="active" >Sign up</a></span>
+</mat-toolbar>
 
 
-<li><a routerLink="/login" routerLinkActive="active" >Log in</a></li>
-<li><a routerLink="/signup" routerLinkActive="active" >Sign up</a></li>
+
 
 <router-outlet></router-outlet>
