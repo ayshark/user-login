@@ -104,11 +104,6 @@ class UserDetailAPI(APIView):
 class LogInAPI(APIView):
     # permission_classes = [permissions.IsAuthenticated]
             
-# {
-# "username": "ef",
-# "password": "fa"
-# }
-
     def get_user(self, username, password):
         try:
             user = Users.objects.get(username = username)
@@ -120,11 +115,11 @@ class LogInAPI(APIView):
         except:
             return None
 
-    def user_not_logged(self, user_id):
+    def isUserLoggedOut(self, user_id):
         try:
-            return Logs.objects.filter(user = user_id).order_by('-time')[0].has_logged_out
+            return Logs.objects.filter(user = user_id).order_by('-login_time')[0].has_logged_out
         except:
-            return True
+            return None
 
     def get(self, request):
         logs = Logs.objects.all()
@@ -147,11 +142,11 @@ class LogInAPI(APIView):
                 status = status.HTTP_400_BAD_REQUEST
             )
         user_id = user.id
-        if self.user_not_logged(user_id):
+        if self.isUserLoggedOut(user_id):
             data = {
             'user': user_id,
             'token': random.randint(100, 1000)
-            }
+        }
             serializer = LogsSerializer(data = data)
             if serializer.is_valid():
                 serializer.save()
@@ -166,6 +161,7 @@ class LogInAPI(APIView):
                 status = status.HTTP_200_OK
             )
 
+        
         return Response(
             serializer.errors,
             status = status.HTTP_400_BAD_REQUEST
@@ -185,7 +181,7 @@ class LogOutAPI(APIView):
             return Response(
                 {'res': 'user has not logged in'},
                 status = status.HTTP_200_OK
-            )     
+            )   
         data = {
             'user': log.user.id,
             'logout_time': datetime.datetime.now(),
