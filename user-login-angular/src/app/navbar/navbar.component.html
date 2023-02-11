@@ -1,0 +1,13 @@
+<mat-toolbar>
+    <span><a routerLink="/home" routerLinkActive="active" >Angular Project</a></span>
+    <span class="example-spacer"></span>
+    <ng-container *ngIf="isLoggedIn$ | async">
+    </ng-container>
+    <ng-template #login>
+        <span class="block"><a routerLink="/login" routerLinkActive="active" >Log in</a></span>
+        <span class="block"><a routerLink="/signup" routerLinkActive="active" >Sign up</a></span>
+    </ng-template>
+    <ng-template #logout>
+        <span class="block"><a routerLink="" routerLinkActive="active" >Log out</a></span>
+    </ng-template>
+</mat-toolbar>

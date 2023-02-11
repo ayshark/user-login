@@ -8,6 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTableModule } from '@angular/material/table';
 import { UserLoginComponent } from './user-login/user-login.component';
 import { AppRoutingModule } from './app-routing.module';
 import { RouterModule } from "@angular/router"
@@ -15,6 +16,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UserSignupComponent } from './user-signup/user-signup.component';
 import { HomePageComponent } from './home-page/home-page.component';
+import { AuthRouteGuard } from './Services/auth-route-guard.service';
+import { NavbarComponent } from './navbar/navbar.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +25,7 @@ import { HomePageComponent } from './home-page/home-page.component';
     UserLoginComponent,
     UserSignupComponent,
     HomePageComponent,
+    NavbarComponent,
   ],
   imports: [
     BrowserModule,
@@ -31,6 +35,7 @@ import { HomePageComponent } from './home-page/home-page.component';
     MatFormFieldModule,
     MatIconModule,
     MatButtonModule,
+    MatTableModule,
     AppRoutingModule,
     RouterModule,
     HttpClientModule,
@@ -38,7 +43,7 @@ import { HomePageComponent } from './home-page/home-page.component';
     ReactiveFormsModule,
   ],
   exports: [AppRoutingModule],
-  providers: [],
+  providers: [AuthRouteGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
