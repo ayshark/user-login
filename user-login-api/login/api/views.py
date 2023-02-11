@@ -2,8 +2,9 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework import permissions, status
 from rest_framework.response import Response
-from django.core.exceptions import ObjectDoesNotExist
+from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.hashers import check_password
+import jwt
 
 import datetime
 import random
@@ -117,9 +118,13 @@ class LogInAPI(APIView):
 
     def isUserLoggedOut(self, user_id):
         try:
-            return Logs.objects.filter(user = user_id).order_by('-login_time')[0].has_logged_out
+            log = Logs.objects.filter(user = user_id).order_by('-login_time')[0]
         except:
-            return None
+            return True
+        if log.has_logged_out:
+            return True
+        else:
+            return False
 
     def get(self, request):
         logs = Logs.objects.all()
@@ -150,8 +155,14 @@ class LogInAPI(APIView):
             serializer = LogsSerializer(data = data)
             if serializer.is_valid():
                 serializer.save()
+                refresh = RefreshToken.for_user(user)
+
                 return Response(
-                    serializer.data,
+                    # serializer.data,
+                    {
+                        'refresh': str(refresh),
+                        'access': str(refresh.access_token),
+                    },
                     status = status.HTTP_200_OK
                 )
         else:
