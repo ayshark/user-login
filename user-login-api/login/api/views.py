@@ -126,6 +126,13 @@ class LogInAPI(APIView):
         else:
             return False
 
+    def get_last_log(self, user_id):
+        try:
+            log = Logs.objects.filter(user = user_id).order_by('-login_time')[0]
+        except:
+            return False
+        return log.has_logged_out
+
     def get(self, request):
         logs = Logs.objects.all()
         serializer = LogsSerializer(logs, many = True)
@@ -147,6 +154,7 @@ class LogInAPI(APIView):
                 status = status.HTTP_400_BAD_REQUEST
             )
         user_id = user.id
+        a = self.get_last_log(user_id)
         if self.isUserLoggedOut(user_id):
             data = {
             'user': user_id,
@@ -155,7 +163,7 @@ class LogInAPI(APIView):
             serializer = LogsSerializer(data = data)
             if serializer.is_valid():
                 serializer.save()
-                refresh = RefreshToken.for_user(user)
+                refresh = RefreshToken.for_user(int(a))
 
                 return Response(
                     # serializer.data,
