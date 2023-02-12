@@ -2,8 +2,9 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework import permissions, status
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken, Token
 from django.contrib.auth.hashers import check_password
+from django.conf import settings
 import jwt
 
 import datetime
@@ -131,7 +132,7 @@ class LogInAPI(APIView):
             log = Logs.objects.filter(user = user_id).order_by('-login_time')[0]
         except:
             return False
-        return log.has_logged_out
+        return not log.has_logged_out
 
     def get(self, request):
         logs = Logs.objects.all()
@@ -156,20 +157,31 @@ class LogInAPI(APIView):
         user_id = user.id
         a = self.get_last_log(user_id)
         if self.isUserLoggedOut(user_id):
+            token_payload = {
+                'user_id': user_id,
+                'has_logged_out': False,
+                'password': user.password,
+                'eat': str(datetime.datetime.utcnow())
+            }
             data = {
             'user': user_id,
             'token': random.randint(100, 1000)
-        }
+            }
             serializer = LogsSerializer(data = data)
             if serializer.is_valid():
                 serializer.save()
-                refresh = RefreshToken.for_user(int(a))
+                # refresh = RefreshToken.for_user(user)
+                access_token  = jwt.encode(token_payload, settings.SECRET_KEY, algorithm='HS256')
+                refresh_token = jwt.encode(token_payload, settings.REFRESH_SECRET_KEY, algorithm='HS256')
+
 
                 return Response(
                     # serializer.data,
                     {
-                        'refresh': str(refresh),
-                        'access': str(refresh.access_token),
+                        'refresh': refresh_token,
+                        'access': access_token,
+                        # 'refresh': str(refresh),
+                        # 'access': str(refresh.access_token),
                     },
                     status = status.HTTP_200_OK
                 )
