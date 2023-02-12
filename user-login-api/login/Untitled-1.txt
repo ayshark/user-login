@@ -1,0 +1,9 @@
+# curl --data '{"username": "aysha", "password": "nida"}' \http://localhost:8000/api/login
+
+curl \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"username": "ay", "password": "sha"}' \
+  http://localhost:8000/api/login/
+
+

@@ -1,0 +1,47 @@
+
+<form [formGroup]="signUpForm" (ngSubmit)="signUpUser()">
+    <div>
+        <p>
+            <mat-form-field>
+                <mat-label>Name</mat-label>
+                <input matInput formControlName="name" placeholder="Your name">
+            </mat-form-field>
+        <p>
+            <mat-form-field>
+                <mat-label>Bio</mat-label>
+                <textarea matInput formControlName="bio" placeholder="Write a short bio"></textarea>
+            </mat-form-field>
+        </p>
+        <p>
+            <mat-form-field>
+                <mat-label>Place</mat-label>
+                <input matInput formControlName="place" placeholder="Tell us where you live">
+            </mat-form-field>
+        </p>
+        <p>
+            <mat-form-field>
+                <mat-label>Username</mat-label>
+                <input matInput formControlName="username" placeholder="Create a unique username">
+            </mat-form-field>
+        </p>
+        <p>
+            <mat-form-field appearance="fill">
+                <mat-label>Password</mat-label>
+                <input matInput formControlName="password" [type]="hide ? 'password' : 'text'" placeholder="Create a password">
+                <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                  <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </button>
+              </mat-form-field>
+        </p>
+        <p>
+            <mat-form-field appearance="fill">
+                <mat-label>Confirm Password</mat-label>
+                <input matInput [type]="hide ? 'password' : 'text'" placeholder="Confirm password">
+                <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                  <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </button>
+              </mat-form-field>
+        </p>
+    </div>
+    <button mat-raised-button type="submit">Create an account</button>
+</form>
